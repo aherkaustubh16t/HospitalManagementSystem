@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm> // Include for std::remove
 
 using namespace std;
 
@@ -18,7 +19,10 @@ public:
     }
 
     void removeChild(TreeNode *child) {
-        children.erase(remove(children.begin(), children.end(), child), children.end());
+        auto it = std::remove(children.begin(), children.end(), child);
+        if (it != children.end()) {
+            children.erase(it, children.end()); // Erase the "removed" elements
+        }
     }
 
     void display(int level = 0) {
@@ -68,11 +72,11 @@ public:
     bool deleteNode(TreeNode *parent, string name, string type) {
         for (auto it = parent->children.begin(); it != parent->children.end(); ++it) {
             if ((*it)->name == name && (*it)->type == type) {
-                parent->removeChild(*it);
-                delete *it;
+                parent->removeChild(*it); // Remove from parent's children
+                delete *it; // Delete the node and its subtree
                 return true;
             }
-            if (deleteNode(*it, name, type)) return true;
+            if (deleteNode(*it, name, type)) return true; // Recurse into the subtree
         }
         return false;
     }
@@ -241,4 +245,3 @@ int main() {
 
     return 0;
 }
-
