@@ -17,6 +17,10 @@ public:
         children.push_back(child);
     }
 
+    void removeChild(TreeNode *child) {
+        children.erase(remove(children.begin(), children.end(), child), children.end());
+    }
+
     void display(int level = 0) {
         for (int i = 0; i < level; i++) {
             cout << "  ";
@@ -61,6 +65,18 @@ public:
         doctorNode->addChild(patient);
     }
 
+    bool deleteNode(TreeNode *parent, string name, string type) {
+        for (auto it = parent->children.begin(); it != parent->children.end(); ++it) {
+            if ((*it)->name == name && (*it)->type == type) {
+                parent->removeChild(*it);
+                delete *it;
+                return true;
+            }
+            if (deleteNode(*it, name, type)) return true;
+        }
+        return false;
+    }
+
     void display() {
         root->display();
     }
@@ -72,7 +88,10 @@ void showMenu() {
     cout << "2. Add Doctor to Department\n";
     cout << "3. Add Patient to Doctor\n";
     cout << "4. Display Hospital Structure\n";
-    cout << "5. Exit\n";
+    cout << "5. Delete Department\n";
+    cout << "6. Delete Doctor\n";
+    cout << "7. Delete Patient\n";
+    cout << "8. Exit\n";
     cout << "Enter your choice: ";
 }
 
@@ -143,6 +162,45 @@ void addPatient(HospitalTree &hospital) {
     cout << "Patient '" << patientName << "' added to Dr. '" << doctorName << "' successfully.\n";
 }
 
+void deleteDepartment(HospitalTree &hospital) {
+    string departmentName;
+    cout << "Enter department name to delete: ";
+    cin.ignore();
+    getline(cin, departmentName);
+    
+    if (hospital.deleteNode(hospital.root, departmentName, "department")) {
+        cout << "Department '" << departmentName << "' deleted successfully.\n";
+    } else {
+        cout << "Department not found.\n";
+    }
+}
+
+void deleteDoctor(HospitalTree &hospital) {
+    string doctorName;
+    cout << "Enter doctor's name to delete: ";
+    cin.ignore();
+    getline(cin, doctorName);
+
+    if (hospital.deleteNode(hospital.root, doctorName, "doctor")) {
+        cout << "Doctor '" << doctorName << "' deleted successfully.\n";
+    } else {
+        cout << "Doctor not found.\n";
+    }
+}
+
+void deletePatient(HospitalTree &hospital) {
+    string patientName;
+    cout << "Enter patient's name to delete: ";
+    cin.ignore();
+    getline(cin, patientName);
+
+    if (hospital.deleteNode(hospital.root, patientName, "patient")) {
+        cout << "Patient '" << patientName << "' deleted successfully.\n";
+    } else {
+        cout << "Patient not found.\n";
+    }
+}
+
 int main() {
     HospitalTree hospital;
     int choice;
@@ -165,6 +223,15 @@ int main() {
             hospital.display();
             break;
         case 5:
+            deleteDepartment(hospital);
+            break;
+        case 6:
+            deleteDoctor(hospital);
+            break;
+        case 7:
+            deletePatient(hospital);
+            break;
+        case 8:
             cout << "Exiting the program.\n";
             return 0;
         default:
@@ -174,3 +241,4 @@ int main() {
 
     return 0;
 }
+
